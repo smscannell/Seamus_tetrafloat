@@ -180,9 +180,9 @@ void loop()
 //  compared to the gyro and accelerometer!
             if (mcount > 1000/MagRate) {  // this is a poor man's way of setting the magnetometer read rate (see below) 
             mpu.getMag  ( &m1, &m2, &m3 );
-            mx = m1*10.0f*1229.0f/4096.0f + 18.0f; // milliGauss (1229 microTesla per 2^12 bits, 10 mG per microTesla)
-            my = m2*10.0f*1229.0f/4096.0f + 70.0f; // apply calibration offsets in mG that correspond to your environment and magnetometer
-            mz = m3*10.0f*1229.0f/4096.0f + 270.0f;
+            mx = m1*10.0f*1229.0f/4096.0f + 224.0f; // milliGauss (1229 microTesla per 2^12 bits, 10 mG per microTesla)
+            my = m2*10.0f*1229.0f/4096.0f - 371.0f; // apply calibration offsets in mG that correspond to your environment and magnetometer
+            mz = m3*10.0f*1229.0f/4096.0f - 561.0f;
             mcount = 0;
             }           
          }
@@ -204,20 +204,24 @@ void loop()
     delt_t = millis() - count;
     if (delt_t > 500) { // update LCD once per half-second independent of read rate
 
-    Serial.print("ax = "); Serial.print((int)1000*ax);  
-    Serial.print(" ay = "); Serial.print((int)1000*ay); 
-    Serial.print(" az = "); Serial.print((int)1000*az); Serial.println(" mg");
-    Serial.print("gx = "); Serial.print( gx, 2); 
-    Serial.print(" gy = "); Serial.print( gy, 2); 
-    Serial.print(" gz = "); Serial.print( gz, 2); Serial.println(" deg/s");
-    Serial.print("mx = "); Serial.print( (int)mx ); 
-    Serial.print(" my = "); Serial.print( (int)my ); 
-    Serial.print(" mz = "); Serial.print( (int)mz ); Serial.println(" mG");
+//    Serial.print("ax = "); Serial.print((int)1000*ax);  
+//    Serial.print(" ay = "); Serial.print((int)1000*ay); 
+//    Serial.print(" az = "); Serial.print((int)1000*az); Serial.println(" mg");
+//    Serial.print("gx = "); Serial.print( gx, 2); 
+//    Serial.print(" gy = "); Serial.print( gy, 2); 
+//    Serial.print(" gz = "); Serial.print( gz, 2); Serial.println(" deg/s");
+//    Serial.print("mx = "); Serial.print( (int)mx ); 
+//    Serial.print(" my = "); Serial.print( (int)my ); 
+//    Serial.print(" mz = "); Serial.print( (int)mz ); Serial.println(" mG");
     
-    Serial.print("q0 = "); Serial.print(q[0]);
-    Serial.print(" qx = "); Serial.print(q[1]); 
-    Serial.print(" qy = "); Serial.print(q[2]); 
-    Serial.print(" qz = "); Serial.println(q[3]); 
+    Serial.print( (int)mx ); Serial.print("\t");
+    Serial.print( (int)my ); Serial.print("\t");
+    Serial.println( (int)mz );
+    
+//    Serial.print("q0 = "); Serial.print(q[0]);
+//    Serial.print(" qx = "); Serial.print(q[1]); 
+//    Serial.print(" qy = "); Serial.print(q[2]); 
+//    Serial.print(" qz = "); Serial.println(q[3]); 
                    
     
   // Define output variables from updated quaternion---these are Tait-Bryan angles, commonly used in aircraft orientation.
@@ -236,14 +240,14 @@ void loop()
     yaw   *= 180.0f / PI - 1.2; // Declination at Danville, California is 13 degrees 48 minutes and 47 seconds on 2014-04-04
     roll  *= 180.0f / PI;
 
-    Serial.print("Yaw, Pitch, Roll: ");
-    Serial.print(yaw, 2);
-    Serial.print(", ");
-    Serial.print(pitch, 2);
-    Serial.print(", ");
-    Serial.println(roll, 2);
-    
-    Serial.print("rate = "); Serial.print((float)1.0f/deltat, 2); Serial.println(" Hz");
+//    Serial.print("Yaw, Pitch, Roll: ");
+//    Serial.print(yaw, 2);
+//    Serial.print(", ");
+//    Serial.print(pitch, 2);
+//    Serial.print(", ");
+//    Serial.println(roll, 2);
+//    
+//    Serial.print("rate = "); Serial.print((float)1.0f/deltat, 2); Serial.println(" Hz");
 
 
      
