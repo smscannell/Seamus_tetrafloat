@@ -1,4 +1,19 @@
-// USER DEFINABLE VARIABLES
+// DESCRIPTION: 
+//
+// Program Functions:
+//   - Pull raw data from an MPU-9150 IMU
+//   - Calculate heading (yaw) from raw magnetometer measurements
+//   - Smooth the heading signal
+//   - Implement a PID control law to control the heading of the IMU
+//   - Output HIGH/LOW signals to indicate clockwise/anticlockwise rotation
+//   - Output a pwm signal to the servo amps (490Hz)
+//
+// TODO:
+//   - Add tilt compensation
+//   - Add realtime graphing and data logging
+
+
+//---------------- USER DEFINABLE VARIABLES ----------------------//
 
 //Pin assignments
 #define ClockwiseWinch 2
@@ -7,6 +22,8 @@
 
 //PID parameters
 double Kp = 1, Ki = 2, Kd = 0, Setpoint = 0;
+
+
 
 // http://www.instructables.com/id/Simple-Manual-Magnetometer-Calibration/?ALLSTEPS
 // Magetometer offsets:
@@ -46,7 +63,6 @@ void setup() {
   pinMode(AntiClockwiseWinch, OUTPUT);
   pinMode(V_sig, OUTPUT);
 
-  Setpoint = 0;    // Desired orientation in degrees
   myPID.SetOutputLimits(-255, 255); //  Tell the PID what range of outputs to give
   myPID.SetMode(AUTOMATIC); // Turn PID on
 
