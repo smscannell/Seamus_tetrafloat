@@ -144,7 +144,7 @@ void loop() {
     // display tab-separated accel/gyro x/y/z values
     Serial.print(V_meas); Serial.print("\t");
     Serial.print(smoothedV_meas); Serial.print("\t");
-    Serial.print(abs(Output)); Serial.print("\t");
+    Serial.print(Output); Serial.print("\t");
     Serial.print(Anti_status); Serial.print("\t");
     Serial.println(Clock_status);
     now = millis();
