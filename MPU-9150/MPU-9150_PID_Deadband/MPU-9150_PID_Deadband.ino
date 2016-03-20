@@ -1,4 +1,4 @@
-// DESCRIPTION: 
+// DESCRIPTION:
 //
 // Program Functions:
 //   - Pull raw data from an MPU-9150 IMU
@@ -22,6 +22,9 @@
 
 //PID parameters
 double Kp = 1, Ki = 0.1, Kd = 0, Setpoint = 0;
+
+// Triangular wave parameters
+double A = 1, TP = 0.8;
 
 
 
@@ -50,6 +53,8 @@ MPU6050 accelgyro(MPU9150addr);
 float V_meas, fax, fay, faz, fgx, fgy, fgz, fmx, fmy, fmz, Anti_status, Clock_status, smoothedV_meas;
 boolean AccelWkg; // Accelerometer present and working?
 
+float DelT, now = 0, f = 0, i_updown = 0;
+
 // Setup PID
 double Input, Output; //  Define variables
 PID myPID(&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT); // Specify the links and initial tuning parameters
@@ -63,7 +68,7 @@ void setup() {
   pinMode(AntiClockwiseWinch, OUTPUT);
   pinMode(V_sig, OUTPUT);
 
-  myPID.SetOutputLimits(-255, 255); //  Tell the PID what range of outputs to give
+  myPID.SetOutputLimits(-10, 10); //  Tell the PID what range of outputs to give
   myPID.SetMode(AUTOMATIC); // Turn PID on
 
   //------------------------ IMU Setup ---------------------------------------//
@@ -87,6 +92,7 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   char line[256];
+  DelT = (millis() - now) / 1000;
 
   if (AccelWkg) {
     readAccel();
@@ -98,17 +104,28 @@ void loop() {
     if (abs(smoothedV_meas - Setpoint) > 2) {
       Input = smoothedV_meas;
       myPID.Compute();
-      analogWrite(V_sig, abs(Output));
+    }
+    
+    // Generate triangular wave
+    f = f + (((4 * A) * i_updown) - (2 * A)) * (DelT / TP);
+    if (f <= -A)  {
+      i_updown = 1;
+    }
+    if (f >= A) {
+      i_updown = 0;
     }
 
+    Output =+ f;
+
+
     // Relays
-    if (Output > 0) {
+    if (Output > 2) {
       digitalWrite(ClockwiseWinch, HIGH);
       digitalWrite(AntiClockwiseWinch, LOW);
       Anti_status = 0;
       Clock_status = 1;
     }
-    else if (Output < 0) {
+    else if (Output < -2) {
       digitalWrite(ClockwiseWinch, LOW);
       digitalWrite(AntiClockwiseWinch, HIGH);
       Anti_status = 1;
@@ -130,6 +147,7 @@ void loop() {
     Serial.print(abs(Output)); Serial.print("\t");
     Serial.print(Anti_status); Serial.print("\t");
     Serial.println(Clock_status);
+    now = millis();
     delay(10);
   }
 }
